@@ -1,7 +1,9 @@
 import pygame as p
 import board
 import sys
-from multiprocessing import Process, Queue
+
+from search_algo import findbestMoveNegaMaxAlphaBeta, scoreBoard
+
 
 BOARD_WIDTH = BOARD_HEIGHT = 790
 MOVE_LOG_PANEL_WIDTH = 400
@@ -31,7 +33,7 @@ def main():
     sqSelected = ()  # No square is selected initially, this will keep track of the last click of the user (tuple(row,col))
     playerClicks = []  # This will keep track of player clicks (two tuples)
     gameOver = False
-    gs.printBoard()  # Print the initial board state
+    # gs.printBoard()  # Print the initial board state
 
     while running:
         for e in p.event.get():
@@ -39,6 +41,7 @@ def main():
                 running = False
             elif e.type == p.MOUSEBUTTONDOWN:
                 if not gameOver:
+                    
                     location = p.mouse.get_pos()  # (x, y) location of the mouse
                     col = location[0] // SQUARE_SIZE
                     row = location[1] // SQUARE_SIZE
@@ -50,10 +53,18 @@ def main():
                         playerClicks.append(sqSelected)  # Append for both 1st and 2nd click
                     if len(playerClicks) == 2:
                         move = board.Move(playerClicks[0], playerClicks[1], gs.board)
-                        print(move.getChessNotation())
+                        
                         for i in range(len(validMoves)):
                             if move == validMoves[i]:
+                                gs.validMoveToStr()
+                               
                                 gs.makeMove(validMoves[i])
+                                # you can use gs.undoMove(move)
+                                
+                                # if not gs.whiteToMove:
+                                #    gs.calculateReward(move)
+                                # else:
+                                #    gs.calculateReward(move)
                                 moveMade = True
                                 animate = True
                                 sqSelected = ()  # Reset user clicks
